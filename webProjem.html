@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mayın Tarlası Oyunu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #d1ecf1; /* Açık mavi arka plan */
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #dc3545; /* Kırmızı başlık */
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+    }
+
+    #score {
+      font-weight: bold;
+      color: #28a745; /* Yeşil skor */
+    }
+
+    .board {
+      display: block;
+      margin: 20px auto;
+      border-spacing: 3px;
+      background-color: transparent; /* Tablo arka planı şeffaf */
+    }
+
+    .cell {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #999;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #198754; 
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .cell.clicked {
+      background-color: #ffc0cb; 
+    }
+
+    .cell.mine {
+      background-color: #198754; 
+      color: #fff;
+    }
+
+    .cell:hover {
+      background-color: #28a745; 
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      color: #888;
+    }
+
+    .game-over {
+      font-size: 24px;
+      text-align: center;
+      color: #dc3545; 
+      display: none;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .blink {
+      animation: blink 1s linear infinite;
+    }
+  
+   
+    .advertisement {
+      font-size: 30px;
+      text-align: center;
+      color: black;
+      animation: blink 1s linear infinite;
+      margin-top: 20px;
+      
+    }
+
+    .advertisement:hover {
+      animation: none;
+    }
+.banner {
+  width: 100%;
+  background-color: #ffd700; 
+  border: 2px solid #000; 
+  font-size: 18px;
+  text-align: center;
+}
+
+.banner td {
+  padding: 10px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Mayın Tarlası Oyunu</h1>
+  <p>Skor: <span id="score">0</span></p>
+  <div class="game-over blink">Mayına Bastınız! Oyun Bitti! Skor: <span id="finalScore">0</span></div>
+  <table id="gameBoard" class="board"></table>
+   <b>
+  <div class="advertisement blink">
+  <table class="banner">
+    <tr>
+      <td colspan="16">
+        Sedat Auto her türlü 2. el 0 araç alım satımı yapılır Sedat ÖZTOPRAK iletişim gsm:**** *** ** **
+      </td>
+    </tr>
+  </table>
+</div></b>
+
+   <script>
+    let boardSize = 16; 
+    let board = [];
+    let score = 0;
+
+    function createBoard() {
+      let table = document.getElementById('gameBoard');
+      
+      for (let i = 0; i < boardSize; i++) {
+        let row = table.insertRow();
+        board[i] = [];
+        
+        for (let j = 0; j < boardSize; j++) {
+          let cell = row.insertCell();
+          cell.classList.add('cell');
+          cell.setAttribute('data-row', i);
+          cell.setAttribute('data-col', j);
+          
+          cell.addEventListener('click', cellClick);
+          
+          board[i][j] = {
+            element: cell,
+            isMine: Math.random() < 0.2,
+            isRevealed: false
+          };
+        }
+      }
+    }
+    
+    function cellClick(event) {
+      let row = parseInt(event.target.getAttribute('data-row'));
+      let col = parseInt(event.target.getAttribute('data-col'));
+      
+      if (!board[row][col].isRevealed) {
+        if (board[row][col].isMine) {
+          event.target.classList.add('clicked', 'mine');
+          document.querySelector('.game-over').style.display = 'block';
+          document.getElementById('finalScore').innerText = score;
+          document.getElementById('score').innerText = '0';
+          revealAllMines();
+          resetGame();
+        } else {
+          event.target.classList.add('clicked');
+          board[row][col].isRevealed = true;
+          increaseScore();
+        }
+      }
+    }
+    
+    function revealAllMines() {
+      board.forEach(row => {
+        row.forEach(cell => {
+          if (cell.isMine) {
+            cell.element.classList.add('clicked', 'mine');
+          }
+        });
+      });
+    }
+
+    function resetGame() {
+      let table = document.getElementById('gameBoard');
+      table.innerHTML = '';
+      score = 0;
+      
+      setTimeout(() => {
+        document.querySelector('.game-over').style.display = 'none';
+        createBoard();
+      }, 3000); 
+    }
+
+    function increaseScore() {
+      score++;
+      document.getElementById('score').innerText = score;
+    }
+
+    createBoard();
+  </script>
+
+  <div class="footer">Emre MIZRAK</div>
+</body>
+</html>
